@@ -1,9 +1,9 @@
 package middle
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"shopping/handler"
+	"shopping/resource"
 	"shopping/service"
 	"strings"
 )
@@ -20,18 +20,22 @@ func LoginValidate(next echo.HandlerFunc) echo.HandlerFunc {
 
 		authorization :=  c.Request().Header.Get("key")
 		if authorization == ""{
-			return handler.ErrorResp(c,"token 不存在",11)
+			return handler.ErrorResp(c,"header token 不存在",11)
 		}
 
 		Exists,err := service.ExistKey(authorization)
 		if err != nil {
-			fmt.Println(err)
+			resource.GetLogger().Errorf("ExistKEY happen %s",err)
+			return handler.ErrorResp(c,"查询KEY 错误",1)
 		}
-		if Exists == 0{
-			return handler.ErrorResp(c,"token 过期",11)
+		if Exists == 1{
+			return next(c)
+		}
 
+		if Exists == 0{
+			return handler.ErrorResp(c,"token 过期",1)
 		}
-		return next(c)
+		return handler.ErrorResp(c,"您需要重新登录",11)
 	}
 
 }
