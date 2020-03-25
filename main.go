@@ -12,6 +12,7 @@ import (
 	"shopping/handler"
 	"shopping/handler/middle"
 	"shopping/resource"
+	"shopping/service"
 	"syscall"
 	"time"
 )
@@ -40,13 +41,12 @@ func main() {
 
 	e.Use(middle.LoginValidate)
 
-//uuid
-//	u1 := (uuid.NewV4())
-//	fmt.Printf("UUIDv4: %s\n", u1)
-//	fmt.Printf("%T,%s\n", u1,u1)
-//
-//	u2 := u1.String()
-//	fmt.Printf("%T,%s\n", u2,u2)
+	user, err := service.SelectUser("2343")
+	if err!= nil{
+		fmt.Println(err)
+	}
+	fmt.Println(user)
+
 	for _, h := range handler.GetRouters() {
 		e.Add(h.Method, h.Path, h.Hf)
 	}

@@ -1,18 +1,21 @@
 package consts
 
 const (
-	CodeSuccess             = 20000 // 请求成功
-	CodeNeedLogin           = 40003 //
-	CodeErrParameter        = 40023
-	CodeRPCError            = 40025
-	CodeInternalServerError = 50000
-
-	CodeNotAllowModify = 30000
+	CodeSuccess              	= 20000 // 登录成功
+	CodeLoginErrParameter    	= 40003 //
+	CodeInternalServerError  	= 50000
+	CodePhoneIsNotExist         = 60000
+	CodeErrPassword  			= 60010
+	CodeInputCellphone			= 60011
+	CodeLoginErrMethod				= 60020
 )
 
 var StatusText = map[int]string{
-	CodeNeedLogin:           "invalid authorization",
-	CodeErrParameter:        "参数错误",
-	CodeInternalServerError: "服务器内部错误，请联系开发人员",
-	CodeNotAllowModify:      "只能修改当前所属月份的上一月份数据",
+	CodeSuccess:			 	"登录成功",
+	CodeLoginErrParameter:   	"登录参数错误",
+	CodeInternalServerError: 	"服务器内部错误，请联系开发人员",
+	CodePhoneIsNotExist: 		"您的手机号不存在,请注册",
+	CodeErrPassword:			"密码错误",
+	CodeInputCellphone:			"请输入手机号",
+	CodeLoginErrMethod:			"Method Error Parameter",
 }
