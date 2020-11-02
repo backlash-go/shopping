@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
+	"net/http"
 	"shopping/consts"
+	"shopping/entity"
 	"shopping/models"
-	"shopping/models/communication"
 	"shopping/resource"
 	"shopping/service"
 	//"strconv"
@@ -38,47 +39,35 @@ func init() {
 }
 
 func UserVerify(c echo.Context, ) error {
-	req := &communication.GetLoginParam{}
+	req := &entity.LoginRequestParam{}
 	err := c.Bind(req)
 	if err != nil {
 		resource.GetLogger().Errorf("bin req i failed")
 		return ErrorResp(c, consts.StatusText[consts.CodeLoginErrParameter], consts.CodeLoginErrParameter)
 	}
-	password := MdSalt(req.Password)
-
-	switch req.Method {
-	case "passwd":
-		if req.Cellphone == "" {
-			return ErrorResp(c, consts.StatusText[consts.CodeInputCellphone], consts.CodeInputCellphone)
-		}
-		user, err := service.SelectUser(req.Cellphone)
-		if err != nil {
-			resource.GetLogger().Errorf("handler job use selectuser is failed %v,%v", req.Cellphone, err.Error())
-			return ErrorResp(c, consts.StatusText[consts.CodePhoneIsNotExist], consts.CodePhoneIsNotExist)
-		}
-		if user.Cellphone == req.Cellphone && user.Password == password {
-			token := CreateToken(user.Cellphone)
-			c.Response().Header().Set("key", token)
-			service.HMSet(token, user.Cellphone, user.Email, 3600)
-			return SuccessResp(c, consts.StatusText[consts.CodeSuccess])
-		}
-		return ErrorResp(c, consts.StatusText[consts.CodeErrPassword], consts.CodeErrPassword)
-
-	case "code":
-		if req.Cellphone == "" {
-			return ErrorResp(c, "请输入手机号", 1)
-		}
-		user, err := service.SelectUser(req.Cellphone)
-		if err != nil {
-			resource.GetLogger().Errorf("handler job use selectuser is failed %v,%v", req.Cellphone, err.Error())
-		}
-		if user.Cellphone == "" {
-			return ErrorResp(c, "手机号不存在，请注册", 1)
-		}
-
+	if err = c.Validate(req); err != nil {
+		resource.GetLogger().Errorf("Validate req is failed")
+		return ErrorResp(c, consts.StatusText[consts.CodeLoginErrParameter], consts.CodeLoginErrParameter)
 	}
 
-	return ErrorResp(c, consts.StatusText[consts.CodeLoginErrMethod], consts.CodeLoginErrMethod)
+	user, err := service.GetUserIsExisted(req.Account)
+	if err == gorm.ErrRecordNotFound {
+		return ErrorResp(c, consts.StatusText[consts.CodeAccountIsNotExist], consts.CodeAccountIsNotExist)
+	}
+	if err != nil{
+		resource.GetLogger().Errorf("Validate req is failed:  %s", err.Error())
+		return ErrorResp(c, consts.StatusText[consts.CodeInternalServerError], consts.CodeInternalServerError)
+	}
+
+	password := MdSalt(req.Password)
+	if user.Password == password{
+		cookie := new(http.Cookie)
+		cookie.Name = ""
+		cookie.Value = ""
+
+		return SuccessResp(c,user)
+	}
+	return ErrorResp(c,consts.StatusText[consts.CodeErrPassword],consts.CodeErrPassword)
 
 }
 
@@ -125,7 +114,7 @@ func Registry(c echo.Context) error {
 		return ErrorResp(c, consts.StatusText[consts.CodeLoginErrParameter], consts.CodeLoginErrParameter)
 	}
 	if req.Cellphone == "" || req.Password == "" || req.Email == "" || req.Address == "" {
-		return ErrorResp(c,"注册信息不能为空",1)
+		return ErrorResp(c, "注册信息不能为空", 1)
 	}
 	password := MdSalt(req.Password)
 	_, err = service.SelectUser(req.Cellphone)

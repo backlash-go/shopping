@@ -4,15 +4,16 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 	"log"
 	"os"
 	"os/signal"
+	"shopping/entity"
 	"shopping/handler"
 	"shopping/handler/middle"
 	"shopping/resource"
-	"shopping/service"
 	"syscall"
 	"time"
 )
@@ -39,13 +40,10 @@ func main() {
 	e := echo.New()
 	//e.Use(handle.ResTime)
 
-	e.Use(middle.LoginValidate)
+	e.Validator = &entity.CustomValidator{Validator: validator.New()}
 
-	user, err := service.SelectUser("2343")
-	if err!= nil{
-		fmt.Println(err)
-	}
-	fmt.Println(user)
+
+	e.Use(middle.LoginValidate)
 
 	for _, h := range handler.GetRouters() {
 		e.Add(h.Method, h.Path, h.Hf)
