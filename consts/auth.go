@@ -5,13 +5,12 @@ const (
 )
 
 const (
-	AuthHeaderKey               = "Authorization"
-	AuthRedisFiledOfDingName    = "ding_name"
-	AuthRedisFiledOfDingUserId  = "ding_user_id"
-	AuthRedisFiledOfStaffId     = "staff_id"
-	AuthRedisFiledOfStaffType   = "staff_type"
-	AuthRedisFiledOfStaffAvatar = "staff_avatar_url"
-	AuthRedisFiledOfStaffName   = "staff_name"
+	AuthId        = "Id"
+	AuthAccount   = "Account"
+	AuthCellphone = "Cellphone"
+	AuthNickName  = "NickName"
+	AuthRealName  = "RealName"
+	AuthAvatarUrl = "AvatarUrl"
 )
 
 const (
@@ -21,3 +20,13 @@ const (
 const (
 	DefaultListSize = 20
 )
+
+/*
+	"Id":        user.Id,
+		"Account":   user.Account,
+		"Cellphone": user.Cellphone,
+		"NickName":  user.NickName,
+		"RealName":  user.RealName,
+		"AvatarUrl": user.AvatarUrl,
+	}
+*/

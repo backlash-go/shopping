@@ -7,3 +7,7 @@ const (
 	HttpMethodDelete = "DELETE"
 	HttpMethodHead   = "HEAD"
 )
+
+
+const CookieSession  =  "lo_cs"
+

@@ -6,8 +6,9 @@ import "time"
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cellphone` varchar(32) NOT NULL DEFAULT '' COMMENT '用户名',
+  `account` varchar(32) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` varchar(128) NOT NULL DEFAULT '0' COMMENT '密码',
-  `name` varchar(200) NOT NULL DEFAULT '' COMMENT '展示名称',
+  `nick_name` varchar(200) NOT NULL DEFAULT '' COMMENT '展示名称',
   `real_name` varchar(16) DEFAULT NULL COMMENT '老师真实姓名',
   `email` varchar(128) NOT NULL DEFAULT '' COMMENT '邮箱',
   `avatar_url` varchar(200) NOT NULL DEFAULT '' COMMENT '头像地址',
@@ -15,7 +16,9 @@ CREATE TABLE `user` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  AUTO_INCREMENT=0  DEFAULT CHARSET=utf8mb4;
+
+insert into user values(1,"18273041051","backlash","xixianbin","nickback",realback,"466711901@qq.com","sdsa")
 */
 
 type User struct {

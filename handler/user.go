@@ -10,6 +10,8 @@ import (
 	"shopping/models"
 	"shopping/resource"
 	"shopping/service"
+	"time"
+
 	//"strconv"
 )
 
@@ -18,11 +20,6 @@ func init() {
 		Method: consts.HttpMethodPost,
 		Path:   "/login",
 		Hf:     UserVerify,
-		//{
-		//	"cellphone":"18918734197",
-		//	"password":"lyqissb",
-		//	"method": "passwd"
-		//}
 	})
 
 	routers = append(routers, handler{
@@ -50,24 +47,31 @@ func UserVerify(c echo.Context, ) error {
 		return ErrorResp(c, consts.StatusText[consts.CodeLoginErrParameter], consts.CodeLoginErrParameter)
 	}
 
-	user, err := service.GetUserIsExisted(req.Account)
+	user, err := service.VerifyUser(req.Account)
 	if err == gorm.ErrRecordNotFound {
 		return ErrorResp(c, consts.StatusText[consts.CodeAccountIsNotExist], consts.CodeAccountIsNotExist)
 	}
-	if err != nil{
+	if err != nil {
 		resource.GetLogger().Errorf("Validate req is failed:  %s", err.Error())
 		return ErrorResp(c, consts.StatusText[consts.CodeInternalServerError], consts.CodeInternalServerError)
 	}
 
 	password := MdSalt(req.Password)
-	if user.Password == password{
+	if user.Password == password {
+		session, err := service.CreateSession(user)
+		if err != nil {
+			resource.GetLogger().Errorf(" CreateSession is failed:  %s", err.Error())
+			return ErrorResp(c, consts.StatusText[consts.CodeInternalServerError], consts.CodeInternalServerError)
+		}
 		cookie := new(http.Cookie)
-		cookie.Name = ""
-		cookie.Value = ""
-
-		return SuccessResp(c,user)
+		cookie.Name = consts.CookieSession
+		cookie.Value = session.Key
+		cookie.Expires = time.Unix(session.Expire, 0)
+		cookie.Path = "/"
+		c.SetCookie(cookie)
+		return SuccessResp(c, user)
 	}
-	return ErrorResp(c,consts.StatusText[consts.CodeErrPassword],consts.CodeErrPassword)
+	return ErrorResp(c, consts.StatusText[consts.CodeErrPassword], consts.CodeErrPassword)
 
 }
 

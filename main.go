@@ -31,8 +31,7 @@ func main() {
 	resource.InitDB(dbConf["user"], dbConf["password"], dbConf["host"], dbConf["port"], dbConf["name"])
 
 	//init redis
-	authRedisConf := viper.GetStringMapString("authRedis")
-	resource.InitRedis(fmt.Sprintf("%s:%s", authRedisConf["host"], authRedisConf["port"]), authRedisConf["password"], authRedisConf["db"])
+	resource.InitRedis()
 
 	//logger
 	resource.InitLogger()
@@ -40,10 +39,11 @@ func main() {
 	e := echo.New()
 	//e.Use(handle.ResTime)
 
+	//inspect validator to echo
 	e.Validator = &entity.CustomValidator{Validator: validator.New()}
 
 
-	e.Use(middle.LoginValidate)
+	e.Use(middle.Valid)
 
 	for _, h := range handler.GetRouters() {
 		e.Add(h.Method, h.Path, h.Hf)

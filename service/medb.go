@@ -14,7 +14,7 @@ func VerifyAccountLogin(account, password string) (user models.User, err error) 
 }
 
 //判断用户是否存在
-func GetUserIsExisted(account string) (user models.User, err error) {
+func VerifyUser(account string) (user models.User, err error) {
 	err = resource.GetDB().Where("account = ?", account).First(&user).Error
 	return
 }
