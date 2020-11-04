@@ -30,11 +30,14 @@ func main() {
 	dbConf := viper.GetStringMapString("database")
 	resource.InitDB(dbConf["user"], dbConf["password"], dbConf["host"], dbConf["port"], dbConf["name"])
 
+
+	//logger
+
+	resource.InitLogger("dev")
+
 	//init redis
 	resource.InitRedis()
 
-	//logger
-	resource.InitLogger()
 
 	e := echo.New()
 	//e.Use(handle.ResTime)

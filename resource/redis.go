@@ -22,12 +22,13 @@ func InitRedis() error {
 	if err != nil {
 		return err
 	}
-	logger.Info(pong)
+	Logger.Info(pong)
+
 	err = RDClient.Set("course_homework-running", "yeah", 0).Err()
 	if err != nil {
 		return errors.New("redis Set failed: " + dsn)
 	}
-	logger.Info("init redis")
+	Logger.Info("init redis")
 	return nil
 }
 
@@ -46,9 +47,8 @@ func SetKeyTtl(key string, time time.Duration) error {
 	return err
 }
 
-func RedisHmGet(key string,fields ...string) ([]interface{}, error) {
-	s, err := RDClient.HMGet(key,fields...).Result()
-	RDClient.Exists().Result()
+func RedisHmGet(key string, fields ...string) ([]interface{}, error) {
+	s, err := RDClient.HMGet(key, fields...).Result()
 	return s, err
 }
 
@@ -62,11 +62,13 @@ func RedisGet(key string) (string, error) {
 	return result, nil
 }
 
-func RedisExistKey(key string) bool {
-	r, err := RedisGet(key)
-	if r == "" || err != nil {
-		return false
-	} else {
-		return true
+func RedisExistKey(key string) (bool, error) {
+	number, err := RDClient.Exists(key).Result()
+	if err != nil {
+		return false, err
 	}
+	if number == 1 {
+		return true, err
+	}
+	return false, err
 }

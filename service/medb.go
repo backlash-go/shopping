@@ -28,7 +28,7 @@ func VerifyPassword( id uint64) (verify models.User, err error) {
 
 //注册用户
 
-func RegistryUser(name, password, email, address string) (err error) {
-	err = resource.GetDB().Create(&models.User{Cellphone: name, Password: password, Email: email, Address: address}).Error
-	return
-}
+//func RegistryUser(name, password, email, address string) (err error) {
+//	err = resource.GetDB().Create(&models.User{Cellphone: name, Password: password, Email: email, Address: address}).Error
+//	return
+//}

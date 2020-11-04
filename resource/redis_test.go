@@ -18,6 +18,7 @@ func TestGetRedis(t *testing.T) {
 	if len(result) == 0 {
 		fmt.Println("result is nil")
 	}
+	logger.Info("aaaa")
 	fmt.Printf("%T,%v\n", result, result)
 	fmt.Println(result[0])
 
